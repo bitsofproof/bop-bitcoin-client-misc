@@ -1,9 +1,8 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.bitsofproof</groupId>
 	<artifactId>bop-bitcoin-client-misc</artifactId>
-	<version>3.2.1-SNAPSHOT</version>
+	<version>3.2.1</version>
 	<name>bop-bitcoin-client-misc</name>
 	<description>The BOP Bitcoin Client misc.</description>
 	<packaging>jar</packaging>
@@ -60,7 +59,7 @@
 		<connection>scm:git:git@github.com:bitsofproof/bop-bitcoin-client-misc.git</connection>
 		<developerConnection>scm:git:git@github.com:bitsofproof/bop-bitcoin-client-misc.git</developerConnection>
 		<url>https://github.com/bitsofproof/supernode</url>
-		<tag>HEAD</tag>
+		<tag>3.2.1</tag>
 	</scm>
 
 
