@@ -34,6 +34,14 @@
 		</contributor>
 	</contributors>
 
+	<repositories>
+		<repository>
+			<id>bitsofproof</id>
+			<name>Bits of Proof Public Maven Repository</name>
+			<url>https://bitsofproof.com/maven</url>
+		</repository>
+	</repositories>
+
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
