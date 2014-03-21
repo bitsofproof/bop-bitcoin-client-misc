@@ -39,9 +39,8 @@
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<slf4j.version>1.6.6</slf4j.version>
 		<java.compiler.version>1.7</java.compiler.version>
-		<bop-bitcoin-server-api.version>3.2.1</bop-bitcoin-server-api.version>
-		<bop-bitcoin-client-account.version>3.2.1</bop-bitcoin-client-account.version>
-		<protobuf.version>2.5.0</protobuf.version>
+		<bop-bitcoin-server-api.version>3.3.0</bop-bitcoin-server-api.version>
+		<bop-bitcoin-client-account.version>3.3.0</bop-bitcoin-client-account.version>
 	</properties>
 
 	<distributionManagement>
@@ -139,11 +138,6 @@
 			<groupId>com.bitsofproof</groupId>
 			<artifactId>bop-bitcoin-client-account</artifactId>
 			<version>${bop-bitcoin-client-account.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>com.google.protobuf</groupId>
-			<artifactId>protobuf-java</artifactId>
-			<version>${protobuf.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
