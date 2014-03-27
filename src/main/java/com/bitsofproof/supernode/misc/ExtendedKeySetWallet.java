@@ -13,13 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.bitsofproof.supernode.wallet;
+package com.bitsofproof.supernode.misc;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import com.bitsofproof.supernode.common.ExtendedKey;
 import com.bitsofproof.supernode.common.ValidationException;
+import com.bitsofproof.supernode.wallet.AccountManager;
+import com.bitsofproof.supernode.wallet.ExtendedKeyAccountManager;
 
 public class ExtendedKeySetWallet implements Wallet
 {

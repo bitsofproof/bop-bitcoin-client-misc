@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.bitsofproof.supernode.wallet;
+package com.bitsofproof.supernode.misc;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -30,6 +30,9 @@ import com.bitsofproof.supernode.api.BCSAPI;
 import com.bitsofproof.supernode.api.BCSAPIException;
 import com.bitsofproof.supernode.common.ExtendedKey;
 import com.bitsofproof.supernode.common.ValidationException;
+import com.bitsofproof.supernode.wallet.AccountManager;
+import com.bitsofproof.supernode.wallet.ExtendedKeyAccountManager;
+import com.bitsofproof.supernode.wallet.WalletFormat;
 import com.google.protobuf.ByteString;
 
 public class SimpleFileWallet implements Wallet
