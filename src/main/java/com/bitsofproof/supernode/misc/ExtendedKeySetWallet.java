@@ -25,7 +25,7 @@ import com.bitsofproof.supernode.common.ValidationException;
 
 public class ExtendedKeySetWallet implements Wallet
 {
-	private final Map<String, AccountManager> accountManager = new HashMap<String, AccountManager> ();
+	private final Map<String, AccountManager> accountManager = new HashMap<> ();
 
 	public void addKey (String name, ExtendedKey key, long created) throws ValidationException
 	{
