@@ -107,7 +107,7 @@ public class KeyFormatter
 		byte[] result = new byte[49];
 
 		SecureRandom random = new SecureRandom ();
-		byte[] ownersalt = null;
+		byte[] ownersalt;
 		byte[] ownentropy = new byte[8];
 		if ( lot != 0 )
 		{
@@ -155,7 +155,7 @@ public class KeyFormatter
 			System.arraycopy (passpoint, 0, result, 16, 33);
 
 		}
-		catch ( UnsupportedEncodingException e )
+		catch ( UnsupportedEncodingException ignored)
 		{
 		}
 		return ByteUtils.toBase58WithChecksum (result);
@@ -216,7 +216,7 @@ public class KeyFormatter
 			}
 		}
 
-		if ( ec == false )
+		if ( !ec )
 		{
 			return parseBIP38NoEC (store, compressed);
 		}
@@ -254,31 +254,7 @@ public class KeyFormatter
 			}
 			return kp;
 		}
-		catch ( UnsupportedEncodingException e )
-		{
-			throw new ValidationException (e);
-		}
-		catch ( NoSuchAlgorithmException e )
-		{
-			throw new ValidationException (e);
-		}
-		catch ( NoSuchPaddingException e )
-		{
-			throw new ValidationException (e);
-		}
-		catch ( InvalidKeyException e )
-		{
-			throw new ValidationException (e);
-		}
-		catch ( IllegalBlockSizeException e )
-		{
-			throw new ValidationException (e);
-		}
-		catch ( BadPaddingException e )
-		{
-			throw new ValidationException (e);
-		}
-		catch ( NoSuchProviderException e )
+		catch ( UnsupportedEncodingException | NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException | IllegalBlockSizeException | BadPaddingException | NoSuchProviderException e )
 		{
 			throw new ValidationException (e);
 		}
@@ -352,31 +328,7 @@ public class KeyFormatter
 			}
 			return kp;
 		}
-		catch ( UnsupportedEncodingException e )
-		{
-			throw new ValidationException (e);
-		}
-		catch ( NoSuchAlgorithmException e )
-		{
-			throw new ValidationException (e);
-		}
-		catch ( NoSuchProviderException e )
-		{
-			throw new ValidationException (e);
-		}
-		catch ( NoSuchPaddingException e )
-		{
-			throw new ValidationException (e);
-		}
-		catch ( InvalidKeyException e )
-		{
-			throw new ValidationException (e);
-		}
-		catch ( IllegalBlockSizeException e )
-		{
-			throw new ValidationException (e);
-		}
-		catch ( BadPaddingException e )
+		catch ( UnsupportedEncodingException | NoSuchAlgorithmException | NoSuchProviderException | NoSuchPaddingException | InvalidKeyException | IllegalBlockSizeException | BadPaddingException e )
 		{
 			throw new ValidationException (e);
 		}
@@ -404,7 +356,7 @@ public class KeyFormatter
 			System.arraycopy (derived, 32, aesKey, 0, 32);
 			System.arraycopy (derived, 0, xor, 0, 32);
 		}
-		catch ( UnsupportedEncodingException e )
+		catch ( UnsupportedEncodingException ignored)
 		{
 		}
 		SecretKeySpec keyspec = new SecretKeySpec (aesKey, "AES");
@@ -422,22 +374,7 @@ public class KeyFormatter
 			byte[] cs = Hash.hash (store, 0, 39);
 			System.arraycopy (cs, 0, store, 39, 4);
 		}
-		catch ( NoSuchAlgorithmException e )
-		{
-		}
-		catch ( NoSuchProviderException e )
-		{
-		}
-		catch ( NoSuchPaddingException e )
-		{
-		}
-		catch ( InvalidKeyException e )
-		{
-		}
-		catch ( IllegalBlockSizeException e )
-		{
-		}
-		catch ( BadPaddingException e )
+		catch ( NoSuchAlgorithmException | NoSuchProviderException | NoSuchPaddingException | InvalidKeyException | IllegalBlockSizeException | BadPaddingException ignored)
 		{
 		}
 		return store;

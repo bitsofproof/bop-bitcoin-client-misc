@@ -61,7 +61,7 @@ public class SimpleFileWallet implements Wallet
 		}
 	}
 
-	private final Map<String, NCExtendedKeyAccountManager> accounts = new HashMap<String, NCExtendedKeyAccountManager> ();
+	private final Map<String, NCExtendedKeyAccountManager> accounts = new HashMap<> ();
 
 	public SimpleFileWallet (String fileName)
 	{
@@ -83,7 +83,7 @@ public class SimpleFileWallet implements Wallet
 		{
 			signature = ExtendedKey.createFromPassphrase (passphrase, encrypted).getMaster ().sign (encrypted);
 		}
-		catch ( ValidationException e )
+		catch ( ValidationException ignored)
 		{
 		}
 	}
@@ -97,7 +97,7 @@ public class SimpleFileWallet implements Wallet
 			encrypted = master.encrypt (passphrase, production);
 			signature = ExtendedKey.createFromPassphrase (passphrase, encrypted).getMaster ().sign (encrypted);
 		}
-		catch ( ValidationException e )
+		catch ( ValidationException ignored)
 		{
 		}
 	}
@@ -131,7 +131,7 @@ public class SimpleFileWallet implements Wallet
 
 	public List<String> getAccountNames ()
 	{
-		List<String> names = new ArrayList<String> ();
+		List<String> names = new ArrayList<> ();
 		for ( NCExtendedKeyAccountManager account : accounts.values () )
 		{
 			names.add (account.getName ());
@@ -148,13 +148,12 @@ public class SimpleFileWallet implements Wallet
 	{
 		SimpleFileWallet wallet = new SimpleFileWallet (fileName);
 		File f = new File (fileName);
-		InputStream in = new FileInputStream (f);
-		try
+		try (InputStream in = new FileInputStream (f))
 		{
 			WalletFormat.SimpleWallet walletMessage = WalletFormat.SimpleWallet.parseFrom (in);
 			wallet.encrypted = walletMessage.getEncryptedSeed ().toByteArray ();
 			wallet.signature = walletMessage.getSignature ().toByteArray ();
-			for ( WalletFormat.SimpleWallet.Account account : walletMessage.getAccountsList () )
+			for (WalletFormat.SimpleWallet.Account account : walletMessage.getAccountsList ())
 			{
 				ExtendedKey pub = ExtendedKey.parse (account.getPublicKey ());
 				NCExtendedKeyAccountManager am = new NCExtendedKeyAccountManager (account.getName (), account.getCreated () * 1000);
@@ -162,10 +161,6 @@ public class SimpleFileWallet implements Wallet
 				wallet.accounts.put (account.getName (), am);
 				am.setMaster (pub);
 			}
-		}
-		finally
-		{
-			in.close ();
 		}
 		return wallet;
 	}
@@ -206,14 +201,13 @@ public class SimpleFileWallet implements Wallet
 
 	public void persist () throws IOException
 	{
-		FileOutputStream out = new FileOutputStream (fileName);
-		try
+		try (FileOutputStream out = new FileOutputStream (fileName))
 		{
 			WalletFormat.SimpleWallet.Builder builder = WalletFormat.SimpleWallet.newBuilder ();
 			builder.setBcsapiversion (1);
 			builder.setEncryptedSeed (ByteString.copyFrom (encrypted));
 			builder.setSignature (ByteString.copyFrom (signature));
-			for ( NCExtendedKeyAccountManager am : accounts.values () )
+			for (NCExtendedKeyAccountManager am : accounts.values ())
 			{
 				WalletFormat.SimpleWallet.Account.Builder ab = WalletFormat.SimpleWallet.Account.newBuilder ();
 				ab.setName (am.getName ());
@@ -223,10 +217,6 @@ public class SimpleFileWallet implements Wallet
 				builder.addAccounts (ab.build ());
 			}
 			builder.build ().writeTo (out);
-		}
-		finally
-		{
-			out.close ();
 		}
 	}
 }

@@ -53,14 +53,16 @@
 	</properties>
 
 	<distributionManagement>
-		<downloadUrl>http://maven.bitsofproof.com/maven</downloadUrl>
 		<repository>
 			<id>bitsofproof</id>
-			<uniqueVersion>false</uniqueVersion>
-			<name>BOP Public Maven Repository</name>
-			<url>scp://maven@maven.bitsofproof.com/home/maven/repository</url>
-			<layout>default</layout>
+			<name>bop internal repository</name>
+			<url>https://bitsofproof.com/nexus/content/repositories/releases</url>
 		</repository>
+		<snapshotRepository>
+			<id>bitsofproof</id>
+			<name>bop internal repository</name>
+			<url>https://bitsofproof.com/nexus/content/repositories/snapshots</url>
+		</snapshotRepository>
 	</distributionManagement>
 
 	<scm>
