@@ -147,6 +147,11 @@ public class BIP39
 		return mnemo.toString ();
 	}
 
+	public static byte[] getSeed (String mnemonic, String passphrase)
+	{
+		return PBKDF2SHA512.derive (mnemonic, "mnemonic" + passphrase, 2048, 64);
+	}
+
 	private final static String[] english = {
 			"abandon",
 			"ability",

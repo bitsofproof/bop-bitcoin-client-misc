@@ -49,6 +49,7 @@
 		<java.compiler.version>1.7</java.compiler.version>
 		<bop-bitcoin-client-api.version>3.3.2-SNAPSHOT</bop-bitcoin-client-api.version>
 		<bop-bitcoin-client-account.version>3.3.2-SNAPSHOT</bop-bitcoin-client-account.version>
+		<json.version>20090211</json.version>
 	</properties>
 
 	<distributionManagement>
@@ -157,6 +158,12 @@
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
 			<version>${slf4j.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.json</groupId>
+			<artifactId>json</artifactId>
+			<version>${json.version}</version>
+			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>ch.qos.logback</groupId>
