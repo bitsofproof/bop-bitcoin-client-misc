@@ -15,8 +15,8 @@
  */
 package com.bitsofproof.supernode.misc;
 
+import com.bitsofproof.supernode.account.AccountManager;
 import com.bitsofproof.supernode.common.ValidationException;
-import com.bitsofproof.supernode.wallet.AccountManager;
 
 public interface Wallet
 {

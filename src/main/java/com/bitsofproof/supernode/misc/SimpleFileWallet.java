@@ -26,12 +26,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.bitsofproof.supernode.account.AccountManager;
+import com.bitsofproof.supernode.account.ExtendedKeyAccountManager;
 import com.bitsofproof.supernode.api.BCSAPI;
 import com.bitsofproof.supernode.api.BCSAPIException;
 import com.bitsofproof.supernode.common.ExtendedKey;
 import com.bitsofproof.supernode.common.ValidationException;
-import com.bitsofproof.supernode.wallet.AccountManager;
-import com.bitsofproof.supernode.wallet.ExtendedKeyAccountManager;
 import com.bitsofproof.supernode.wallet.WalletFormat;
 import com.google.protobuf.ByteString;
 
