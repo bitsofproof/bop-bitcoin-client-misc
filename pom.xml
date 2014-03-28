@@ -2,7 +2,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.bitsofproof</groupId>
 	<artifactId>bop-bitcoin-client-misc</artifactId>
-	<version>3.3.2-SNAPSHOT</version>
+	<version>3.4.0-SNAPSHOT</version>
 	<name>bop-bitcoin-client-misc</name>
 	<description>The BOP Bitcoin Client misc.</description>
 	<packaging>jar</packaging>
@@ -47,8 +47,8 @@
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<slf4j.version>1.6.6</slf4j.version>
 		<java.compiler.version>1.7</java.compiler.version>
-		<bop-bitcoin-client-api.version>3.3.2-SNAPSHOT</bop-bitcoin-client-api.version>
-		<bop-bitcoin-client-account.version>3.3.2-SNAPSHOT</bop-bitcoin-client-account.version>
+		<bop-bitcoin-client-api.version>3.4.0-SNAPSHOT</bop-bitcoin-client-api.version>
+		<bop-bitcoin-client-account.version>3.4.0-SNAPSHOT</bop-bitcoin-client-account.version>
 		<json.version>20090211</json.version>
 	</properties>
 
