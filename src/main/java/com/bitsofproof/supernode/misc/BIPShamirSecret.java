@@ -43,7 +43,6 @@ public class BIPShamirSecret
 	{
 		this.l = l;
 		this.m = m;
-		System.out.println (m);
 	}
 
 	public static class SecretShare
@@ -107,6 +106,7 @@ public class BIPShamirSecret
 
 	private byte[] hash (byte[] d) throws ValidationException
 	{
+
 		MessageDigest digest;
 		try
 		{
@@ -116,7 +116,7 @@ public class BIPShamirSecret
 		{
 			throw new ValidationException (e);
 		}
-		return toArray (new BigInteger (1, digest.digest (d)).mod (m), 64);
+		return toArray (new BigInteger (1, digest.digest (d)).mod (m), l);
 	}
 
 	public SecretShare[] cut (byte[] secret, int pieces, int needed) throws ValidationException
@@ -130,11 +130,10 @@ public class BIPShamirSecret
 			throw new ValidationException ("Secret is too big");
 		}
 		BigInteger[] a = new BigInteger[needed];
-		byte[] r = toArray (new BigInteger (1, secret), 64);
+		byte[] r = toArray (new BigInteger (1, secret), l);
 		for ( int i = 0; i < a.length; ++i )
 		{
 			a[i] = new BigInteger (1, r);
-			System.out.println ("a" + i + ": " + a[i]);
 			r = hash (r);
 		}
 
@@ -148,9 +147,8 @@ public class BIPShamirSecret
 				y = y.add (BigInteger.valueOf (x).pow (i).multiply (a[i]));
 			}
 			shares[j] = new SecretShare ();
-			shares[j].x = (byte) x;
+			shares[j].x = (byte) j;
 			shares[j].y = y.mod (m);
-			System.out.println ("y" + j + ": " + shares[j].y);
 		}
 
 		return shares;
@@ -179,8 +177,8 @@ public class BIPShamirSecret
 			for ( i = 0; i < shares.length - d; i++ )
 			{
 				int j = i + d;
-				BigInteger xi = BigInteger.valueOf (shares[i].x);
-				BigInteger xj = BigInteger.valueOf (shares[j].x);
+				BigInteger xi = BigInteger.valueOf (shares[i].x + 1);
+				BigInteger xj = BigInteger.valueOf (shares[j].x + 1);
 
 				y[i] = xj.multiply (y[i]).subtract (xi.multiply (y[i + 1])).multiply (xj.subtract (xi).modInverse (m)).mod (m);
 			}

@@ -26,7 +26,7 @@ public class BIPShamirSecretTest
 	public void testVectors2 () throws ValidationException
 	{
 		ECKeyPair kp = ECKeyPair.parseWIF ("5KShamir9pqYHfa63F2r9iA44sK4iDdo2gtyAXHCSRwuCLdqgCv");
-		String[] shares = BIPShamirSecret.cut (kp, 6, 3);
+		String[] shares = BIPShamirSecret.cut (kp, 6, 4);
 		ECKeyPair kp2 = BIPShamirSecret.reconstruct (shares);
 		System.out.println (ECKeyPair.serializeWIF (kp2));
 
