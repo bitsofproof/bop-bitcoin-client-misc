@@ -54,15 +54,10 @@ public class BIPShamirSecret
 	private static final byte compressed = (byte) 0xf6;
 	private static final byte legacy = (byte) 0xf4;
 
-	public static String[] cut (ECKeyPair key, int pieces, int needed) throws ValidationException
+	public static String getShare (ECKeyPair key, int share, int needed) throws ValidationException
 	{
-		String[] shares = new String[pieces];
-		int i = 0;
-		for ( SecretShare s : ss256.cut (key.getPrivate (), pieces, needed) )
-		{
-			shares[i++] = ss256.serialize (key.isCompressed () ? compressed : legacy, s);
-		}
-		return shares;
+		SecretShare ss = ss256.getShare (key.getPrivate (), share, needed);
+		return ss256.serialize (key.isCompressed () ? compressed : legacy, ss);
 	}
 
 	private static byte[] toArray (BigInteger n, int len)
@@ -119,7 +114,7 @@ public class BIPShamirSecret
 		return toArray (new BigInteger (1, digest.digest (d)).mod (m), l);
 	}
 
-	public SecretShare[] cut (byte[] secret, int pieces, int needed) throws ValidationException
+	public SecretShare getShare (byte[] secret, int share, int needed) throws ValidationException
 	{
 		if ( secret.length != l )
 		{
@@ -137,21 +132,17 @@ public class BIPShamirSecret
 			r = hash (r);
 		}
 
-		SecretShare[] shares = new SecretShare[pieces];
-		for ( int j = 0; j < pieces; ++j )
+		int x = share + 1;
+		BigInteger y = a[0];
+		for ( int i = 1; i < needed; ++i )
 		{
-			int x = j + 1;
-			BigInteger y = a[0];
-			for ( int i = 1; i < needed; ++i )
-			{
-				y = y.add (BigInteger.valueOf (x).pow (i).multiply (a[i]));
-			}
-			shares[j] = new SecretShare ();
-			shares[j].x = (byte) j;
-			shares[j].y = y.mod (m);
+			y = y.add (BigInteger.valueOf (x).pow (i).multiply (a[i]));
 		}
+		SecretShare ss = new SecretShare ();
+		ss.x = (byte) share;
+		ss.y = y.mod (m);
 
-		return shares;
+		return ss;
 	}
 
 	public BigInteger reconstruct (SecretShare[] shares) throws ValidationException
