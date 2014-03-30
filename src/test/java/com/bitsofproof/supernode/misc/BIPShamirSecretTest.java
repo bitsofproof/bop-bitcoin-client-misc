@@ -1,8 +1,11 @@
 package com.bitsofproof.supernode.misc;
 
+import static org.junit.Assert.assertTrue;
+
 import java.io.IOException;
 import java.io.InputStream;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Test;
@@ -14,7 +17,7 @@ public class BIPShamirSecretTest
 {
 	private static final String TESTS = "BIPShamirSecret.json";
 
-	private JSONObject readObject (String resource) throws IOException, JSONException
+	private JSONArray readArray (String resource) throws IOException, JSONException
 	{
 		InputStream input = this.getClass ().getResource ("/" + resource).openStream ();
 		StringBuffer content = new StringBuffer ();
@@ -26,7 +29,32 @@ public class BIPShamirSecretTest
 			System.arraycopy (buffer, 0, s, 0, len);
 			content.append (new String (buffer, "UTF-8"));
 		}
-		return new JSONObject (content.toString ());
+		return new JSONArray (content.toString ());
+	}
+
+	// @Test
+	public void testJSON () throws ValidationException, IOException, JSONException
+	{
+		JSONArray tests = readArray (TESTS);
+		for ( int i = 0; i < tests.length (); ++i )
+		{
+			JSONObject test = tests.getJSONObject (i);
+			if ( test.getString ("type").equals ("WIF") )
+			{
+				ECKeyPair key = ECKeyPair.parseWIF (test.getString ("key"));
+				int m = test.getInt ("M");
+				JSONArray shares = test.getJSONArray ("shares");
+				for ( int j = 0; j < shares.length (); ++j )
+				{
+					if ( !shares.getString (j).equals (BIPShamirSecret.getShare (key, j, m)) )
+					{
+						System.out.println (" ** " + shares.getString (j));
+						System.out.println (" ** " + BIPShamirSecret.getShare (key, j, m));
+					}
+					assertTrue (shares.getString (j).equals (BIPShamirSecret.getShare (key, j, m)));
+				}
+			}
+		}
 	}
 
 	@Test
