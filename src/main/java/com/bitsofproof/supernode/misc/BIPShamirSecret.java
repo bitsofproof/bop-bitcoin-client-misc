@@ -46,8 +46,8 @@ public class BIPShamirSecret
 
 	public static class SecretShare
 	{
-		public int x;
-		public BigInteger y;
+		public int shareNumber;
+		public BigInteger share;
 	}
 
 	private static final byte[] compressed = { (byte) 0x26, (byte) 0xf6 };
@@ -79,8 +79,8 @@ public class BIPShamirSecret
 	{
 		byte[] raw = new byte[3 + secretLength];
 		System.arraycopy (secretType, 0, raw, 0, 2);
-		raw[2] = (byte) s.x;
-		System.arraycopy (toArray (s.y, 32), 0, raw, 3, secretLength);
+		raw[2] = (byte) s.shareNumber;
+		System.arraycopy (toArray (s.share, 32), 0, raw, 3, secretLength);
 		return ByteUtils.toBase58WithChecksum (raw);
 	}
 
@@ -98,8 +98,8 @@ public class BIPShamirSecret
 				throw new ValidationException ("Not a key share");
 			}
 			ss[i] = new SecretShare ();
-			ss[i].x = raw[2] & 0xff;
-			ss[i].y = new BigInteger (1, Arrays.copyOfRange (raw, 3, 35));
+			ss[i].shareNumber = raw[2] & 0xff;
+			ss[i].share = new BigInteger (1, Arrays.copyOfRange (raw, 3, 35));
 			comp = raw[1] == compressed[1];
 		}
 		return new ECKeyPair (ss256.reconstruct (ss), comp);
@@ -145,8 +145,8 @@ public class BIPShamirSecret
 			y = y.add (BigInteger.valueOf (x).pow (i).multiply (a[i]));
 		}
 		SecretShare ss = new SecretShare ();
-		ss.x = (byte) share;
-		ss.y = y.mod (secretModulo);
+		ss.shareNumber = (byte) share;
+		ss.share = y.mod (secretModulo);
 
 		return ss;
 	}
@@ -157,7 +157,7 @@ public class BIPShamirSecret
 		{
 			for ( int j = 0; j < shares.length; ++j )
 			{
-				if ( i != j && shares[i].x == shares[j].x )
+				if ( i != j && shares[i].shareNumber == shares[j].shareNumber )
 				{
 					throw new ValidationException ("Shares are not unique");
 				}
@@ -166,7 +166,7 @@ public class BIPShamirSecret
 		BigInteger[] y = new BigInteger[shares.length];
 		for ( int i = 0; i < shares.length; ++i )
 		{
-			y[i] = shares[i].y;
+			y[i] = shares[i].share;
 		}
 		int d, i;
 		for ( d = 1; d < shares.length; d++ )
@@ -174,8 +174,8 @@ public class BIPShamirSecret
 			for ( i = 0; i < shares.length - d; i++ )
 			{
 				int j = i + d;
-				BigInteger xi = BigInteger.valueOf (shares[i].x + 1);
-				BigInteger xj = BigInteger.valueOf (shares[j].x + 1);
+				BigInteger xi = BigInteger.valueOf (shares[i].shareNumber + 1);
+				BigInteger xj = BigInteger.valueOf (shares[j].shareNumber + 1);
 
 				y[i] = xj.multiply (y[i]).subtract (xi.multiply (y[i + 1])).multiply (xj.subtract (xi).modInverse (secretModulo)).mod (secretModulo);
 			}
