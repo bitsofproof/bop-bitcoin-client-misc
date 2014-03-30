@@ -35,13 +35,13 @@ public class BIPShamirSecret
 	private static final BIPShamirSecret ss384 = new BIPShamirSecret (48, BigInteger.ONE.shiftLeft (384).subtract (BigInteger.valueOf (317)));
 	private static final BIPShamirSecret ss512 = new BIPShamirSecret (64, BigInteger.ONE.shiftLeft (512).subtract (BigInteger.valueOf (569)));
 
-	private BigInteger m;
-	private int l;
+	private BigInteger secretModulo;
+	private int secretLength;
 
 	public BIPShamirSecret (int l, BigInteger m)
 	{
-		this.l = l;
-		this.m = m;
+		this.secretLength = l;
+		this.secretModulo = m;
 	}
 
 	public static class SecretShare
@@ -77,10 +77,10 @@ public class BIPShamirSecret
 
 	private String serialize (byte[] secretType, SecretShare s)
 	{
-		byte[] raw = new byte[3 + l];
+		byte[] raw = new byte[3 + secretLength];
 		System.arraycopy (secretType, 0, raw, 0, 2);
 		raw[2] = (byte) s.x;
-		System.arraycopy (toArray (s.y, 32), 0, raw, 3, l);
+		System.arraycopy (toArray (s.y, 32), 0, raw, 3, secretLength);
 		return ByteUtils.toBase58WithChecksum (raw);
 	}
 
@@ -117,21 +117,21 @@ public class BIPShamirSecret
 		{
 			throw new ValidationException (e);
 		}
-		return toArray (new BigInteger (1, digest.digest (d)).mod (m), l);
+		return toArray (new BigInteger (1, digest.digest (d)).mod (secretModulo), secretLength);
 	}
 
 	public SecretShare getShare (byte[] secret, int share, int needed) throws ValidationException
 	{
-		if ( secret.length != l )
+		if ( secret.length != secretLength )
 		{
-			throw new ValidationException ("Secret must be " + l + " bytes");
+			throw new ValidationException ("Secret must be " + secretLength + " bytes");
 		}
-		if ( new BigInteger (1, secret).compareTo (m) >= 0 )
+		if ( new BigInteger (1, secret).compareTo (secretModulo) >= 0 )
 		{
 			throw new ValidationException ("Secret is too big");
 		}
 		BigInteger[] a = new BigInteger[needed];
-		byte[] r = toArray (new BigInteger (1, secret), l);
+		byte[] r = toArray (new BigInteger (1, secret), secretLength);
 		for ( int i = 0; i < a.length; ++i )
 		{
 			a[i] = new BigInteger (1, r);
@@ -146,7 +146,7 @@ public class BIPShamirSecret
 		}
 		SecretShare ss = new SecretShare ();
 		ss.x = (byte) share;
-		ss.y = y.mod (m);
+		ss.y = y.mod (secretModulo);
 
 		return ss;
 	}
@@ -177,7 +177,7 @@ public class BIPShamirSecret
 				BigInteger xi = BigInteger.valueOf (shares[i].x + 1);
 				BigInteger xj = BigInteger.valueOf (shares[j].x + 1);
 
-				y[i] = xj.multiply (y[i]).subtract (xi.multiply (y[i + 1])).multiply (xj.subtract (xi).modInverse (m)).mod (m);
+				y[i] = xj.multiply (y[i]).subtract (xi.multiply (y[i + 1])).multiply (xj.subtract (xi).modInverse (secretModulo)).mod (secretModulo);
 			}
 		}
 		return y[0];
