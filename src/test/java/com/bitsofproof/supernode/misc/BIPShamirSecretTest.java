@@ -10,6 +10,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Test;
 
+import com.bitsofproof.supernode.common.ByteUtils;
 import com.bitsofproof.supernode.common.ECKeyPair;
 import com.bitsofproof.supernode.common.ValidationException;
 
@@ -74,6 +75,34 @@ public class BIPShamirSecretTest
 			System.out.println (s);
 		}
 
+	}
+
+	// @Test
+	public void prefixTest ()
+	{
+		byte[] fmin = new byte[64 + 8];
+		byte[] fmax = new byte[64 + 8];
+		for ( int i = 0; i < fmax.length; ++i )
+		{
+			fmax[i] = (byte) 0xff;
+		}
+		String prev = "";
+		for ( int i = 0; i < 255; ++i )
+		{
+			for ( int j = 0; j < 255; ++j )
+			{
+				fmin[0] = fmax[0] = (byte) i;
+				fmin[1] = fmax[1] = (byte) j;
+				String smin = ByteUtils.toBase58WithChecksum (fmin).substring (0, 2);
+				String smax = ByteUtils.toBase58WithChecksum (fmax).substring (0, 2);
+				if ( smin.equals (smax) && smax.equals ("AS") )
+				{
+					System.out.println (smax);
+					System.out.println (Integer.toHexString (i) + " " + Integer.toHexString (j));
+					prev = smax;
+				}
+			}
+		}
 	}
 
 	@Test
