@@ -29,7 +29,7 @@ import com.bitsofproof.supernode.common.ValidationException;
 
 public class BIPShamirSecret
 {
-	private static final BigInteger prime32 = BigInteger.ONE.shiftLeft (32).subtract (BigInteger.valueOf (5));
+	private static final BigInteger prime16 = BigInteger.ONE.shiftLeft (16).subtract (BigInteger.valueOf (15));
 	private static final BIPShamirSecret ss128 = new BIPShamirSecret (16, BigInteger.ONE.shiftLeft (128).subtract (BigInteger.valueOf (159)));
 	private static final BIPShamirSecret ss192 = new BIPShamirSecret (24, BigInteger.ONE.shiftLeft (192).subtract (BigInteger.valueOf (237)));
 	private static final BIPShamirSecret ss256 = new BIPShamirSecret (32, BigInteger.ONE.shiftLeft (256).subtract (BigInteger.valueOf (189)));
@@ -53,17 +53,22 @@ public class BIPShamirSecret
 		public byte[] fingerprint;
 	}
 
-	private static final byte[] compressed = { (byte) 0x1d, (byte) 0x3 };
-	private static final byte[] legacy = { (byte) 0x1d, (byte) 0x2 };
-	private static final byte[] bip32seed128 = { (byte) 0x0f, (byte) 0xd0 };
-	private static final byte[] bip32seed256 = { (byte) 0x1d, (byte) 0x4 };
-	private static final byte[] bip32seed384 = { (byte) 0x35, (byte) 0x39 };
-	private static final byte[] bip32seed512 = { (byte) 0x61, (byte) 0xa5 };
+	private static final byte[] legacy = { (byte) 0x1a, (byte) 0x46 };
+	private static final byte[] legacyShort = { (byte) 0x26, (byte) 0xf4 };
+	private static final byte[] compressed = { (byte) 0x1a, (byte) 0x47 };
+	private static final byte[] compressedShort = { (byte) 0x26, (byte) 0xf6 };
+	private static final byte[] bip32seed128 = { (byte) 0x0e, (byte) 0x53 };
+	private static final byte[] bip32seed128Short = { (byte) 0x15, (byte) 0x3d };
+	private static final byte[] bip32seed256 = { (byte) 0x1a, (byte) 0x49 };
+	private static final byte[] bip32seed256Short = { (byte) 0x26, (byte) 0xf8 };
+	private static final byte[] bip32seed512 = { (byte) 0x58, (byte) 0x7e };
+	private static final byte[] bip32seed512Short = { (byte) 0x83, (byte) 0xa33 };
 
-	public static String getShare (ECKeyPair key, int share, int needed) throws ValidationException
+	public static String getShare (ECKeyPair key, int share, int needed, boolean verbose) throws ValidationException
 	{
 		SecretShare ss = ss256.getShare (key.getPrivate (), share, needed);
-		return ss256.serialize (key.isCompressed () ? compressed : legacy, ss);
+		return ss256.serialize (key.isCompressed () ? verbose ? compressed : compressedShort :
+				verbose ? legacy : legacyShort, ss, verbose);
 	}
 
 	private static byte[] toArray (BigInteger n, int len)
@@ -79,14 +84,29 @@ public class BIPShamirSecret
 		return p;
 	}
 
-	private String serialize (byte[] secretType, SecretShare s)
+	private String serialize (byte[] secretType, SecretShare s, boolean verbose)
 	{
-		byte[] raw = new byte[8 + secretLength];
+		byte[] raw;
+		if ( verbose )
+		{
+			raw = new byte[6 + secretLength];
+		}
+		else
+		{
+			raw = new byte[3 + secretLength];
+		}
 		System.arraycopy (secretType, 0, raw, 0, 2);
-		raw[2] = (byte) s.shareNumber;
-		raw[3] = (byte) (s.needed & 0xff);
-		System.arraycopy (s.fingerprint, 0, raw, 4, 4);
-		System.arraycopy (toArray (s.share, 32), 0, raw, 8, secretLength);
+		if ( verbose )
+		{
+			System.arraycopy (s.fingerprint, 0, raw, 2, 2);
+			raw[4] = (byte) (s.needed & 0xff - 2);
+			raw[5] = (byte) s.shareNumber;
+		}
+		else
+		{
+			raw[2] = (byte) s.shareNumber;
+		}
+		System.arraycopy (toArray (s.share, 32), 0, raw, verbose ? 6 : 3, secretLength);
 		return ByteUtils.toBase58WithChecksum (raw);
 	}
 
@@ -99,13 +119,14 @@ public class BIPShamirSecret
 		{
 			byte[] raw = ByteUtils.fromBase58WithChecksum (shares[i]);
 			byte[] prefix = Arrays.copyOfRange (raw, 0, 2);
-			if ( !Arrays.areEqual (prefix, compressed) && !Arrays.areEqual (prefix, legacy) )
+			boolean verbose = Arrays.areEqual (prefix, compressed) || !Arrays.areEqual (prefix, legacy);
+			if ( !verbose && !Arrays.areEqual (prefix, compressedShort) && !Arrays.areEqual (prefix, legacyShort) )
 			{
 				throw new ValidationException ("Not a key share");
 			}
 			ss[i] = new SecretShare ();
 			ss[i].shareNumber = raw[2] & 0xff;
-			ss[i].share = new BigInteger (1, Arrays.copyOfRange (raw, 8, 40));
+			ss[i].share = new BigInteger (1, Arrays.copyOfRange (raw, verbose ? 6 : 3, 40));
 			comp = raw[1] == compressed[1];
 		}
 		return new ECKeyPair (ss256.reconstruct (ss), comp);
@@ -158,7 +179,7 @@ public class BIPShamirSecret
 		ss.shareNumber = (byte) share;
 		ss.share = y.mod (secretModulo);
 		ss.needed = needed;
-		ss.fingerprint = hash (secret, prime32, 4);
+		ss.fingerprint = hash (secret, prime16, 2);
 		return ss;
 	}
 
