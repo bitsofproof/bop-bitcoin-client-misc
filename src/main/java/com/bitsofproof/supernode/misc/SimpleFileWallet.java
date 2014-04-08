@@ -26,8 +26,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.bitsofproof.supernode.account.AccountManager;
 import com.bitsofproof.supernode.account.ExtendedKeyAccountManager;
+import com.bitsofproof.supernode.account.TransactionFactory;
 import com.bitsofproof.supernode.api.BCSAPI;
 import com.bitsofproof.supernode.api.BCSAPIException;
 import com.bitsofproof.supernode.common.ExtendedKey;
@@ -83,7 +83,7 @@ public class SimpleFileWallet implements Wallet
 		{
 			signature = ExtendedKey.createFromPassphrase (passphrase, encrypted).getMaster ().sign (encrypted);
 		}
-		catch ( ValidationException ignored)
+		catch ( ValidationException ignored )
 		{
 		}
 	}
@@ -97,7 +97,7 @@ public class SimpleFileWallet implements Wallet
 			encrypted = master.encrypt (passphrase, production);
 			signature = ExtendedKey.createFromPassphrase (passphrase, encrypted).getMaster ().sign (encrypted);
 		}
-		catch ( ValidationException ignored)
+		catch ( ValidationException ignored )
 		{
 		}
 	}
@@ -148,12 +148,12 @@ public class SimpleFileWallet implements Wallet
 	{
 		SimpleFileWallet wallet = new SimpleFileWallet (fileName);
 		File f = new File (fileName);
-		try (InputStream in = new FileInputStream (f))
+		try ( InputStream in = new FileInputStream (f) )
 		{
 			WalletFormat.SimpleWallet walletMessage = WalletFormat.SimpleWallet.parseFrom (in);
 			wallet.encrypted = walletMessage.getEncryptedSeed ().toByteArray ();
 			wallet.signature = walletMessage.getSignature ().toByteArray ();
-			for (WalletFormat.SimpleWallet.Account account : walletMessage.getAccountsList ())
+			for ( WalletFormat.SimpleWallet.Account account : walletMessage.getAccountsList () )
 			{
 				ExtendedKey pub = ExtendedKey.parse (account.getPublicKey ());
 				NCExtendedKeyAccountManager am = new NCExtendedKeyAccountManager (account.getName (), account.getCreated () * 1000);
@@ -174,13 +174,13 @@ public class SimpleFileWallet implements Wallet
 	}
 
 	@Override
-	public synchronized AccountManager getAccountManager (String name)
+	public synchronized TransactionFactory getAccountManager (String name)
 	{
 		return accounts.get (name);
 	}
 
 	@Override
-	public synchronized AccountManager createAccountManager (String name) throws ValidationException
+	public synchronized TransactionFactory createAccountManager (String name) throws ValidationException
 	{
 		if ( accounts.containsKey (name) )
 		{
@@ -201,13 +201,13 @@ public class SimpleFileWallet implements Wallet
 
 	public void persist () throws IOException
 	{
-		try (FileOutputStream out = new FileOutputStream (fileName))
+		try ( FileOutputStream out = new FileOutputStream (fileName) )
 		{
 			WalletFormat.SimpleWallet.Builder builder = WalletFormat.SimpleWallet.newBuilder ();
 			builder.setBcsapiversion (1);
 			builder.setEncryptedSeed (ByteString.copyFrom (encrypted));
 			builder.setSignature (ByteString.copyFrom (signature));
-			for (NCExtendedKeyAccountManager am : accounts.values ())
+			for ( NCExtendedKeyAccountManager am : accounts.values () )
 			{
 				WalletFormat.SimpleWallet.Account.Builder ab = WalletFormat.SimpleWallet.Account.newBuilder ();
 				ab.setName (am.getName ());

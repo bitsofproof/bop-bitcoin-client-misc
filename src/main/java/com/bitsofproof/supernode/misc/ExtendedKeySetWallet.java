@@ -18,14 +18,14 @@ package com.bitsofproof.supernode.misc;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.bitsofproof.supernode.account.AccountManager;
 import com.bitsofproof.supernode.account.ExtendedKeyAccountManager;
+import com.bitsofproof.supernode.account.TransactionFactory;
 import com.bitsofproof.supernode.common.ExtendedKey;
 import com.bitsofproof.supernode.common.ValidationException;
 
 public class ExtendedKeySetWallet implements Wallet
 {
-	private final Map<String, AccountManager> accountManager = new HashMap<> ();
+	private final Map<String, TransactionFactory> accountManager = new HashMap<> ();
 
 	public void addKey (String name, ExtendedKey key, long created) throws ValidationException
 	{
@@ -39,13 +39,13 @@ public class ExtendedKeySetWallet implements Wallet
 	}
 
 	@Override
-	public AccountManager getAccountManager (String name)
+	public TransactionFactory getAccountManager (String name)
 	{
 		return accountManager.get (name);
 	}
 
 	@Override
-	public AccountManager createAccountManager (String name) throws ValidationException
+	public TransactionFactory createAccountManager (String name) throws ValidationException
 	{
 		if ( accountManager.containsKey (name) )
 		{

@@ -15,12 +15,12 @@
  */
 package com.bitsofproof.supernode.misc;
 
-import com.bitsofproof.supernode.account.AccountManager;
+import com.bitsofproof.supernode.account.TransactionFactory;
 import com.bitsofproof.supernode.common.ValidationException;
 
 public interface Wallet
 {
-	public AccountManager getAccountManager (String name);
+	public TransactionFactory getAccountManager (String name);
 
-	public AccountManager createAccountManager (String name) throws ValidationException;
+	public TransactionFactory createAccountManager (String name) throws ValidationException;
 }
