@@ -2,7 +2,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.bitsofproof</groupId>
 	<artifactId>bop-bitcoin-client-misc</artifactId>
-	<version>3.7.0</version>
+	<version>3.7.1</version>
 	<name>bop-bitcoin-client-misc</name>
 	<description>The BOP Bitcoin Client misc.</description>
 	<packaging>jar</packaging>
