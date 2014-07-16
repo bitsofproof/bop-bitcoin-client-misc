@@ -24,7 +24,6 @@ import org.bouncycastle.asn1.x9.X9ECParameters;
 import org.bouncycastle.util.Arrays;
 
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigInteger;
@@ -38,11 +37,20 @@ public class ArmoryWatchOnly
     private List<Address> receiverAddresses = new ArrayList<>();
     private Map<Long,Address> changeAddresses = new HashMap<>();
     private long lastChangeAddressIndex = 0;
-    private byte [] pubkey = new byte [65];
+    private byte [] pubKey = new byte [65];
     private byte [] chainCode = new byte [32];
     private static final X9ECParameters curve = SECNamedCurves.getByName("secp256k1");
 
-    public ArmoryWatchOnly (String walletFile) throws FileNotFoundException, IOException, ValidationException
+    public ArmoryWatchOnly (List<Address> receiver, byte [] changeRootPubKey, byte [] chainCode, long lastUsedChangeIndex)
+    {
+        receiverAddresses = new ArrayList<>();
+        receiverAddresses.addAll(receiver);
+        pubKey = Arrays.clone(changeRootPubKey);
+        this.chainCode = Arrays.clone(chainCode);
+        lastChangeAddressIndex = lastUsedChangeIndex;
+    }
+
+    public ArmoryWatchOnly (String walletFile) throws IOException, ValidationException
     {
         InputStream w = new FileInputStream(walletFile);
         w.read();
@@ -64,20 +72,20 @@ public class ArmoryWatchOnly
         lastChangeAddressIndex <<= 8;
         lastChangeAddressIndex += highest[1];
         lastChangeAddressIndex <<= 8;
-        lastChangeAddressIndex += highest[0]+2;
+        lastChangeAddressIndex += highest[0];
         byte [] dummy3 = new byte [512];
         w.read(dummy3);
-        byte [] pubkeyhash = new byte [20];
-        w.read(pubkeyhash);
+        byte [] pubKeyHash = new byte [20];
+        w.read(pubKeyHash);
         byte [] dummy2 = new byte [16];
         w.read(dummy2);
         w.read(chainCode);
         byte [] dummy4= new byte[76];
         w.read(dummy4);
-        pubkey = new byte [65];
-        w.read(pubkey);
-        ECPublicKey k = new ECPublicKey (pubkey, false);
-        if ( !Arrays.areEqual(k.getAddress().toByteArray(), pubkeyhash) )
+        pubKey = new byte [65];
+        w.read(pubKey);
+        ECPublicKey k = new ECPublicKey (pubKey, false);
+        if ( !Arrays.areEqual(k.getAddress().toByteArray(), pubKeyHash) )
         {
             throw new ValidationException("Could not parse");
         }
@@ -129,15 +137,15 @@ public class ArmoryWatchOnly
         {
             for ( long i = changeAddresses.size(); i <= n; ++i )
             {
-                ECPublicKey k = new ECPublicKey(pubkey, false);
+                ECPublicKey k = new ECPublicKey(pubKey, false);
                 Address a = k.getAddress();
                 changeAddresses.put(i, a);
-                byte[] m = Hash.hash(pubkey);
+                byte[] m = Hash.hash(pubKey);
                 for (int j = 0; j < 32; ++j)
                 {
                     m[j] ^= chainCode[j];
                 }
-                pubkey = curve.getCurve().decodePoint (pubkey).multiply (new BigInteger(1, m)).getEncoded (false);
+                pubKey = curve.getCurve().decodePoint (pubKey).multiply (new BigInteger(1, m)).getEncoded (false);
             }
             lastChangeAddressIndex = Math.max (changeAddresses.size(), lastChangeAddressIndex);
         }
@@ -157,5 +165,15 @@ public class ArmoryWatchOnly
     public List<Address> getReceiverAddresses ()
     {
         return receiverAddresses;
+    }
+
+    public byte[] getPubKey()
+    {
+        return Arrays.clone (pubKey);
+    }
+
+    public byte[] getChainCode ()
+    {
+        return Arrays.clone (chainCode);
     }
 }
